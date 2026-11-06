@@ -49,11 +49,11 @@ return
     if (running) {
         LoadConfig()
         SoundBeep, 900, 80
-        ShowTip("BA Macro: ON")
+        ShowTip("MomoiMacro: ON")
     } else {
         capture := false
         SoundBeep, 500, 120
-        ShowTip("BA Macro: OFF")
+        ShowTip("MomoiMacro: OFF")
     }
     SaveState()
 return

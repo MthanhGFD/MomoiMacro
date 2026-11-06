@@ -1,7 +1,7 @@
 <Window x:Class="BAMacro.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="BA Macro" 
+        Title="MomoiMacro" 
         Icon="Assets/app.ico"
         Height="770" Width="1020"
         WindowStartupLocation="CenterScreen"
@@ -58,7 +58,7 @@
                                 <ImageBrush ImageSource="Assets/student.png" Stretch="UniformToFill"/>
                             </Border.Background>
                         </Border>
-                        <TextBlock Text="BA Macro" FontWeight="SemiBold" FontSize="14" Foreground="#374151" VerticalAlignment="Center"/>
+                        <TextBlock Text="MomoiMacro" FontWeight="SemiBold" FontSize="14" Foreground="#374151" VerticalAlignment="Center"/>
                     </StackPanel>
 
                     <!-- Control Buttons (Min, Close) -->
@@ -346,7 +346,7 @@
                         <Ellipse Name="DotGameConn" Width="7" Height="7" Fill="#9ca3af" Margin="0,0,6,0"/>
                         <TextBlock Name="TxtGameConn" Text="Waiting for game..." FontSize="11.5" Foreground="#6b7280"/>
                     </StackPanel>
-                    <TextBlock Text="BA Macro v2.0" FontSize="11" Foreground="#9ca3af" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                    <TextBlock Text="MomoiMacro" FontSize="11" Foreground="#9ca3af" HorizontalAlignment="Right" VerticalAlignment="Center"/>
                 </Grid>
             </Border>
 
