@@ -19,14 +19,14 @@ And cute Momoi.
 - **`Ctrl + 1`**: **On / Off Macro**
 - **`Ctrl + 2`**: **Record Mode**:
   - On $\rightarrow$ Move mouse to the position $\rightarrow$ Click any keys (`Z`, `X`, `C`, `Mouse4`,...).
-  - ➡️Instantly snap mouse to correct position (with a click so just press a skill beforehand).
+  - => Instantly snap mouse to correct position (with a click so just press a skill beforehand).
 
-### 2. Q - W - E:
+### 2. Q - W - E (you can change the delay yourself):
 - **`Q`**: Spam Skill 1 $\rightarrow$ delay 20ms $\rightarrow$ click at mouse pos.
 - **`W`**: Spam Skill 2 $\rightarrow$ delay 20ms $\rightarrow$ click at mouse pos.
 - **`E`**: Spam Skill 3 $\rightarrow$ delay 20ms $\rightarrow$ click at mouse pos.
 
-*(Pos works with windowed mode)*
+*Pos works with windowed mode (please no 4:3)*
 
 ---
 
