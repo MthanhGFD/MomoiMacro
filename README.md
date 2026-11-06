@@ -15,22 +15,6 @@ And cute Momoi.
 
 ---
 
-## 📥 Prerequisite: AutoHotkey (AHK)
-
-If you run the raw `.ahk` script directly or build without the embedded engine, you'll need **AutoHotkey v1.1**:
-
-1. Download **AutoHotkey v1.1 (deprecated / legacy)** from the official site:  
-   👉 [https://www.autohotkey.com/download/1.1/](https://www.autohotkey.com/download/1.1/)  
-   *(Pick **v1.1 .exe installer**, do NOT use v2.0 or it will cry with syntax errors 😭)*
-2. Run the installer $\rightarrow$ choose **Express Installation** (Unicode 64-bit).
-3. Done! Now Windows knows how to speak `.ahk`.
-
-*(Note: If you use the pre-built `BAMacro.exe`, AHK engine is already bundled inside, but having AHK v1.1 installed never hurts!)*
-
----
-
-## 🎮 How to use
-
 ### 1. Hotkeys
 - **`Ctrl + 1`**: **On / Off Macro**
 - **`Ctrl + 2`**: **Record Mode**:
