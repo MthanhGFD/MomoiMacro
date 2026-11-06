@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="stylesheet" href="style.css">
+  <title>BA Macro</title>
+</head>
+<body>
+  <div class="window-container">
+    <!-- Header Title Bar -->
+    <header class="titlebar" onmousedown="neutron.Drag('titlebar')">
+      <div class="app-brand">
+        <span class="app-icon">✦</span>
+        <span class="app-title">BA Macro</span>
+      </div>
+      <div class="window-controls">
+        <button class="win-btn" onclick="neutron.Minimize()">─</button>
+        <button class="win-btn win-close" onclick="neutron.Close()">✕</button>
+      </div>
+    </header>
+
+    <!-- Header Banner -->
+    <section class="banner">
+      <div>
+        <h1 class="logo-text">BLUE ARCHIVE <span class="accent-text">MACRO</span></h1>
+        <p class="subtitle">Simple click automation for Sensei</p>
+      </div>
+      <div id="status-badge" class="badge-ready">
+        <span id="status-dot" class="dot-green"></span>
+        <span id="status-text">READY</span>
+      </div>
+    </section>
+
+    <!-- Main Content: 2 Columns -->
+    <main class="main-layout">
+      <!-- Left Column: Controls & Coords -->
+      <div class="col-left">
+        <!-- Configuration Card -->
+        <div class="card">
+          <div class="card-title">GAME &amp; MACRO CONFIGURATION</div>
+          <div class="input-row">
+            <div class="input-group">
+              <label>Target Process / Window</label>
+              <input type="text" id="targetExe" value="BlueArchive.exe">
+            </div>
+            <div class="input-group small">
+              <label>Delay (ms)</label>
+              <input type="number" id="delayMs" value="20">
+            </div>
+          </div>
+          <p class="hint-text">💡 Tự động tính toán vị trí chuột theo tỷ lệ % Client Area (Không sợ bị lệch khi phóng to/thu nhỏ).</p>
+        </div>
+
+        <!-- Action Toggle Button (Ctrl + 1) -->
+        <div class="btn-row">
+          <button id="btnToggle" class="btn-start" onclick="ahk.ToggleMacro(!ahk.IsRunning)">
+            <span id="btnIcon">▶</span>
+            <span id="btnText">Start Macro</span>
+            <span class="pill-badge pill-pink">Ctrl + 1</span>
+          </button>
+        </div>
+
+        <!-- Coordinates Status Card -->
+        <div class="card">
+          <div class="card-title-row">
+            <span class="card-title">CALIBRATED COORDINATES (coords.ini)</span>
+            <button class="btn-mini" onclick="ahk.OpenIni()">Open INI</button>
+          </div>
+          <div class="coords-grid">
+            <div class="coord-box">
+              <span class="skill-name">Skill Q</span>
+              <span class="coord-val" id="coordQ">45.0%, 75.0%</span>
+            </div>
+            <div class="coord-box">
+              <span class="skill-name">Skill W</span>
+              <span class="coord-val" id="coordW">52.0%, 75.0%</span>
+            </div>
+            <div class="coord-box">
+              <span class="skill-name">Skill E</span>
+              <span class="coord-val" id="coordE">59.0%, 75.0%</span>
+            </div>
+          </div>
+          <p class="hint-center">💡 Bấm Shift + Q / W / E trong game để cập nhật tọa độ chuột mới nhất.</p>
+        </div>
+      </div>
+
+      <!-- Right Column: Student & Hotkeys -->
+      <div class="col-right">
+        <!-- Student Assistant Frame -->
+        <div class="card student-card">
+          <div class="assistant-header">✨ STUDENT ASSISTANT</div>
+          <div class="avatar-frame">
+            <img src="student.png" alt="Student Artwork">
+            <div class="assistant-tag">Arona Tactical Support</div>
+          </div>
+        </div>
+
+        <!-- Skill Hotkeys Card -->
+        <div class="card hotkeys-card">
+          <div class="card-title">SKILL HOTKEYS</div>
+          <div class="hotkey-row">
+            <div class="key-pill">Q</div>
+            <div class="key-desc">Skill 1 + Click (20ms)</div>
+          </div>
+          <div class="hotkey-row">
+            <div class="key-pill">W</div>
+            <div class="key-desc">Skill 2 + Click (20ms)</div>
+          </div>
+          <div class="hotkey-row">
+            <div class="key-pill">E</div>
+            <div class="key-desc">Skill 3 + Click (20ms)</div>
+          </div>
+          <div class="hotkey-row">
+            <div class="key-pill outline">Shift + Key</div>
+            <div class="key-desc sub">Save position (% client)</div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer Status -->
+    <footer class="footer">
+      <div class="footer-left">
+        <span class="dot-green"></span>
+        <span id="footer-status">Game Process Hook Ready</span>
+      </div>
+      <div class="footer-right">BA Macro v1.0 • Sensei Tactical Automation</div>
+    </footer>
+  </div>
+</body>
+</html>

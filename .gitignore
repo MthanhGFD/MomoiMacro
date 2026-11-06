@@ -1,0 +1,19 @@
+## Build/
+bin/
+obj/
+publish/
+
+## Visual Studio & IDE temp
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## Local INI coordinates
+coords.ini
+
+## Archives and binaries
+*.exe
+*.zip
+*.bin

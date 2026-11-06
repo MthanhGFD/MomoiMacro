@@ -1,0 +1,48 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <ApplicationIcon>Assets\app.ico</ApplicationIcon>
+    <StartupObject>BAMacro.App</StartupObject>
+    <Version>2.0.0</Version>
+  </PropertyGroup>
+
+  <!-- Single-file publish settings: everything (runtime + native DLLs) packed into BAMacro.exe -->
+  <PropertyGroup Condition="'$(PublishSingleFile)' == 'true'">
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <DebugType>none</DebugType>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <!-- Compile macro_core.ahk -> BAMacroEngine.exe (no AutoHotkey install needed on target PC) -->
+  <PropertyGroup>
+    <Ahk2ExeDir>C:\Program Files\AutoHotkey\Compiler</Ahk2ExeDir>
+    <EngineExe>$(MSBuildProjectDirectory)\obj\BAMacroEngine.exe</EngineExe>
+  </PropertyGroup>
+
+  <Target Name="CompileAhkEngine" BeforeTargets="BeforeBuild"
+          Inputs="macro_core.ahk;Assets\app.ico" Outputs="$(EngineExe)"
+          Condition="Exists('$(Ahk2ExeDir)\Ahk2Exe.exe')">
+    <Exec Command="&quot;$(Ahk2ExeDir)\Ahk2Exe.exe&quot; /in &quot;$(MSBuildProjectDirectory)\macro_core.ahk&quot; /out &quot;$(EngineExe)&quot; /icon &quot;$(MSBuildProjectDirectory)\Assets\app.ico&quot; /bin &quot;$(Ahk2ExeDir)\Unicode 64-bit.bin&quot;" />
+  </Target>
+
+  <!-- Embed the compiled engine (added inside a target so it also works on the very first build) -->
+  <Target Name="IncludeAhkEngine" BeforeTargets="BeforeBuild" DependsOnTargets="CompileAhkEngine">
+    <ItemGroup>
+      <EmbeddedResource Include="$(EngineExe)" LogicalName="BAMacroEngine.exe" Condition="Exists('$(EngineExe)')" />
+    </ItemGroup>
+  </Target>
+
+  <ItemGroup>
+    <Resource Include="Assets\app.ico" />
+    <Resource Include="Assets\student.png" />
+    <EmbeddedResource Include="Assets\secret_meme.bin" />
+    <None Remove="Assets\student.jpg" />
+  </ItemGroup>
+
+</Project>
