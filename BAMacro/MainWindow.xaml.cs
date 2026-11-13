@@ -140,22 +140,32 @@ namespace BAMacro
                     _notifyIcon.Icon = System.Drawing.SystemIcons.Application;
                 }
 
-                // Menu chuột phải trên Tray Icon
+                // Menu chuột phải trên Tray Icon (Dùng ContextMenuStrip trong .NET Core / .NET 8)
                 var contextMenu = new Forms.ContextMenuStrip();
 
-                var itemShow = new Forms.ToolStripMenuItem("Hiện cửa sổ", null, (_, _) => RestoreFromTray());
-                var itemMini = new Forms.ToolStripMenuItem("Chế độ Mini", null, (_, _) => SwitchToMiniMode());
+                var itemShow = new Forms.ToolStripMenuItem("Mở giao diện MomoiMacro", null, (_, _) => Dispatcher.Invoke(RestoreFromTray));
+                var itemMini = new Forms.ToolStripMenuItem("Chế độ Mini Mode", null, (_, _) => Dispatcher.Invoke(SwitchToMiniMode));
                 var itemToggle = new Forms.ToolStripMenuItem("Bật / Tắt Macro (Ctrl+1)", null, (_, _) => SendCtrlCombo(VK_1));
-                var itemExit = new Forms.ToolStripMenuItem("Thoát hoàn toàn", null, (_, _) => ExitApplication());
+                var itemExit = new Forms.ToolStripMenuItem("Thoát hoàn toàn", null, (_, _) => Dispatcher.Invoke(ExitApplication));
 
                 contextMenu.Items.Add(itemShow);
                 contextMenu.Items.Add(itemMini);
+                contextMenu.Items.Add(new Forms.ToolStripSeparator());
                 contextMenu.Items.Add(itemToggle);
                 contextMenu.Items.Add(new Forms.ToolStripSeparator());
                 contextMenu.Items.Add(itemExit);
 
                 _notifyIcon.ContextMenuStrip = contextMenu;
-                _notifyIcon.DoubleClick += (_, _) => RestoreFromTray();
+
+                // Chuột trái hoặc đúp chuột đều mở lại app ngay lập tức
+                _notifyIcon.MouseClick += (_, args) =>
+                {
+                    if (args.Button == Forms.MouseButtons.Left)
+                    {
+                        Dispatcher.Invoke(RestoreFromTray);
+                    }
+                };
+                _notifyIcon.DoubleClick += (_, _) => Dispatcher.Invoke(RestoreFromTray);
             }
             catch (Exception ex)
             {
@@ -168,7 +178,7 @@ namespace BAMacro
             Hide();
             if (_notifyIcon != null)
             {
-                _notifyIcon.ShowBalloonTip(1500, "MomoiMacro", "Momoi vẫn đang chạy ngầm trong khay hệ thống (Tray) nè Sensei!", Forms.ToolTipIcon.Info);
+                _notifyIcon.ShowBalloonTip(1500, "MomoiMacro", "Momoi vẫn đang chạy ngầm trong khay hệ thống nè Sensei! (Click vào icon để mở lại)", Forms.ToolTipIcon.Info);
             }
         }
 
@@ -177,6 +187,7 @@ namespace BAMacro
             Show();
             WindowState = WindowState.Normal;
             Activate();
+            Focus();
         }
 
         private void ExitApplication()
@@ -187,28 +198,90 @@ namespace BAMacro
 
         #endregion
 
-        #region Scale & Mode Switching
+        #region Scale, Menu & External Links
 
-        private void ComboScale_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void BtnSettingsMenu_Click(object sender, RoutedEventArgs e)
+        {
+            PopupSettingsMenu.IsOpen = !PopupSettingsMenu.IsOpen;
+        }
+
+        private void ScaleOption_Click(object sender, RoutedEventArgs e)
+        {
+            PopupSettingsMenu.IsOpen = false;
+            if (sender is System.Windows.Controls.Button btn && btn.Tag is string s)
+            {
+                ApplyScale(s);
+            }
+        }
+
+        private void ApplyScale(string preset)
         {
             if (AppScaleTransform == null || _isMiniMode) return;
 
-            if (ComboScale.SelectedItem is ComboBoxItem item && item.Content is string s)
+            double scale = preset switch
             {
-                double scale = s switch
+                "85%" => 0.85,
+                "70%" => 0.70,
+                _ => 1.0
+            };
+
+            AppScaleTransform.ScaleX = scale;
+            AppScaleTransform.ScaleY = scale;
+
+            Width = BaseFullWidth * scale;
+            Height = BaseFullHeight * scale;
+
+            // Update tick icon
+            UpdateScaleCheckmarks(preset);
+            SaveScaleSetting(preset);
+        }
+
+        private void UpdateScaleCheckmarks(string preset)
+        {
+            if (PopupSettingsMenu.Child is Border border && border.Child is StackPanel panel)
+            {
+                foreach (var child in panel.Children)
                 {
-                    "85%" => 0.85,
-                    "70%" => 0.70,
-                    _ => 1.0
-                };
+                    if (child is System.Windows.Controls.Button b && b.Template.FindName("ItemBorder", b) is Border itemBorder)
+                    {
+                        if (itemBorder.Child is Grid grid)
+                        {
+                            foreach (var gChild in grid.Children)
+                            {
+                                if (gChild is TextBlock tb && tb.Name.StartsWith("Check"))
+                                {
+                                    tb.Visibility = (b.Tag as string == preset) ? Visibility.Visible : Visibility.Collapsed;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
-                AppScaleTransform.ScaleX = scale;
-                AppScaleTransform.ScaleY = scale;
+        private void BtnGuide_Click(object sender, RoutedEventArgs e)
+        {
+            GuideOverlayGrid.Visibility = Visibility.Visible;
+        }
 
-                Width = BaseFullWidth * scale;
-                Height = BaseFullHeight * scale;
+        private void BtnCloseGuide_Click(object sender, RoutedEventArgs e)
+        {
+            GuideOverlayGrid.Visibility = Visibility.Collapsed;
+        }
 
-                SaveScaleSetting(s);
+        private void BtnGitHub_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = "https://github.com/MthanhGFD/MomoiMacro",
+                    UseShellExecute = true
+                });
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show($"Không thể mở trình duyệt: {ex.Message}", "MomoiMacro");
             }
         }
 
@@ -227,6 +300,7 @@ namespace BAMacro
             _isMiniMode = true;
             FullViewGrid.Visibility = Visibility.Collapsed;
             MiniViewGrid.Visibility = Visibility.Visible;
+            GuideOverlayGrid.Visibility = Visibility.Collapsed;
 
             AppScaleTransform.ScaleX = 1.0;
             AppScaleTransform.ScaleY = 1.0;
@@ -246,28 +320,19 @@ namespace BAMacro
 
             Topmost = false;
 
-            // Áp dụng lại scale hiện tại từ ComboBox
-            if (ComboScale.SelectedItem is ComboBoxItem item && item.Content is string s)
+            // Áp dụng lại scale hiện tại từ config
+            string preset = "100%";
+            try
             {
-                double scale = s switch
+                var ini = ParseIni(File.ReadAllLines(_iniPath));
+                if (ini.TryGetValue("settings", out var s) && s.TryGetValue("scalepreset", out var p))
                 {
-                    "85%" => 0.85,
-                    "70%" => 0.70,
-                    _ => 1.0
-                };
-
-                AppScaleTransform.ScaleX = scale;
-                AppScaleTransform.ScaleY = scale;
-
-                Width = BaseFullWidth * scale;
-                Height = BaseFullHeight * scale;
+                    preset = p;
+                }
             }
-            else
-            {
-                Width = BaseFullWidth;
-                Height = BaseFullHeight;
-            }
+            catch { }
 
+            ApplyScale(preset);
             RestoreFromTray();
         }
 
@@ -684,14 +749,7 @@ namespace BAMacro
                     // Load scale preset
                     if (s.TryGetValue("scalepreset", out var preset) && preset.Length > 0)
                     {
-                        foreach (ComboBoxItem item in ComboScale.Items)
-                        {
-                            if (item.Content as string == preset)
-                            {
-                                ComboScale.SelectedItem = item;
-                                break;
-                            }
-                        }
+                        ApplyScale(preset);
                     }
                 }
             }

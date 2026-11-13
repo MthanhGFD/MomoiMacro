@@ -28,6 +28,13 @@
                           ShadowDepth="3" 
                           Direction="270"/>
 
+        <DropShadowEffect x:Key="MenuShadow" 
+                          Color="#374151" 
+                          Opacity="0.18" 
+                          BlurRadius="18" 
+                          ShadowDepth="5" 
+                          Direction="270"/>
+
         <!-- Plain button template: content only (styling done by inner Border) -->
         <ControlTemplate x:Key="PlainButton" TargetType="Button">
             <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
@@ -68,18 +75,117 @@
                             <TextBlock Text="MomoiMacro" FontWeight="SemiBold" FontSize="14" Foreground="#374151" VerticalAlignment="Center"/>
                         </StackPanel>
 
-                        <!-- Window & Scale Controls -->
+                        <!-- Window & Action Controls -->
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                            <!-- Scale / Size Preset Selector -->
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,14,0">
-                                <TextBlock Text="Size:" FontSize="11.5" Foreground="#9ca3af" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                                <ComboBox Name="ComboScale" Width="82" Height="26" VerticalContentAlignment="Center" FontSize="11.5"
-                                          SelectionChanged="ComboScale_SelectionChanged" Focusable="False">
-                                    <ComboBoxItem Content="100%" IsSelected="True"/>
-                                    <ComboBoxItem Content="85%"/>
-                                    <ComboBoxItem Content="70%"/>
-                                </ComboBox>
-                            </StackPanel>
+
+                            <!-- Hướng dẫn sử dụng Button -->
+                            <Button Click="BtnGuide_Click" Height="26" Padding="8,0" Background="#f3f4f6" BorderThickness="0" Cursor="Hand" Margin="0,0,6,0" ToolTip="Xem ảnh hướng dẫn sử dụng">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="📖" FontSize="11" Margin="0,0,4,0"/>
+                                                <TextBlock Text="Hướng dẫn" FontSize="11.5" FontWeight="SemiBold" Foreground="#4b5563" VerticalAlignment="Center"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+
+                            <!-- GitHub Repository Link Button -->
+                            <Button Click="BtnGitHub_Click" Height="26" Padding="8,0" Background="#f3f4f6" BorderThickness="0" Cursor="Hand" Margin="0,0,8,0" ToolTip="Mở GitHub Repository (https://github.com/MthanhGFD/MomoiMacro)">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="🐙" FontSize="11" Margin="0,0,4,0"/>
+                                                <TextBlock Text="GitHub" FontSize="11.5" FontWeight="SemiBold" Foreground="#4b5563" VerticalAlignment="Center"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+
+                            <!-- Menu Cài Đặt (Scale & Settings Popup) -->
+                            <Button Name="BtnSettingsMenu" Click="BtnSettingsMenu_Click" Height="26" Padding="8,0" Background="#ffffff" BorderBrush="#e5e7eb" BorderThickness="1" Cursor="Hand" Margin="0,0,8,0" ToolTip="Cài đặt kích thước giao diện">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="⚙" FontSize="11.5" Foreground="#6b7280" Margin="0,0,4,0"/>
+                                                <TextBlock Text="Menu" FontSize="11.5" FontWeight="SemiBold" Foreground="#4b5563" VerticalAlignment="Center"/>
+                                                <TextBlock Text=" ▾" FontSize="9" Foreground="#9ca3af" VerticalAlignment="Center"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+
+                            <!-- Settings Context Menu Popup (Đẹp, gọn gàng, thay thế ComboBox) -->
+                            <Popup Name="PopupSettingsMenu" PlacementTarget="{Binding ElementName=BtnSettingsMenu}" Placement="Bottom" StaysOpen="False" AllowsTransparency="True" PopupAnimation="Fade">
+                                <Border Background="White" CornerRadius="10" BorderBrush="#e5e7eb" BorderThickness="1" Padding="6" Margin="0,4,0,0" Effect="{StaticResource MenuShadow}" Width="160">
+                                    <StackPanel>
+                                        <TextBlock Text="ĐỘ PHÓNG ĐẠI (SCALE)" FontSize="9.5" FontWeight="Bold" Foreground="#9ca3af" Margin="8,4,8,6"/>
+                                        
+                                        <!-- 100% -->
+                                        <Button Click="ScaleOption_Click" Tag="100%" Background="Transparent" BorderThickness="0" Cursor="Hand" Padding="8,6" HorizontalContentAlignment="Left">
+                                            <Button.Template>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Border Name="ItemBorder" Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                                                        <Grid>
+                                                            <TextBlock Text="Chuẩn (100%)" FontSize="12" Foreground="#374151" VerticalAlignment="Center"/>
+                                                            <TextBlock Name="Check100" Text="✔" Foreground="#cf6a87" FontWeight="Bold" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                                        </Grid>
+                                                    </Border>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter TargetName="ItemBorder" Property="Background" Value="#fce7f3"/>
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Button.Template>
+                                        </Button>
+
+                                        <!-- 85% -->
+                                        <Button Click="ScaleOption_Click" Tag="85%" Background="Transparent" BorderThickness="0" Cursor="Hand" Padding="8,6" HorizontalContentAlignment="Left">
+                                            <Button.Template>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Border Name="ItemBorder" Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                                                        <Grid>
+                                                            <TextBlock Text="Vừa phải (85%)" FontSize="12" Foreground="#374151" VerticalAlignment="Center"/>
+                                                            <TextBlock Name="Check85" Text="✔" Visibility="Collapsed" Foreground="#cf6a87" FontWeight="Bold" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                                        </Grid>
+                                                    </Border>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter TargetName="ItemBorder" Property="Background" Value="#fce7f3"/>
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Button.Template>
+                                        </Button>
+
+                                        <!-- 70% -->
+                                        <Button Click="ScaleOption_Click" Tag="70%" Background="Transparent" BorderThickness="0" Cursor="Hand" Padding="8,6" HorizontalContentAlignment="Left">
+                                            <Button.Template>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Border Name="ItemBorder" Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                                                        <Grid>
+                                                            <TextBlock Text="Nhỏ gọn (70%)" FontSize="12" Foreground="#374151" VerticalAlignment="Center"/>
+                                                            <TextBlock Name="Check70" Text="✔" Visibility="Collapsed" Foreground="#cf6a87" FontWeight="Bold" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                                        </Grid>
+                                                    </Border>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter TargetName="ItemBorder" Property="Background" Value="#fce7f3"/>
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Button.Template>
+                                        </Button>
+                                    </StackPanel>
+                                </Border>
+                            </Popup>
 
                             <!-- Switch to Mini Mode Button -->
                             <Button Click="BtnMiniMode_Click" Height="26" Padding="8,0" Background="#fce7f3" BorderThickness="0" Cursor="Hand" Margin="0,0,10,0" ToolTip="Chuyển sang giao diện Mini tối giản">
@@ -469,6 +575,55 @@
                         </Border>
                     </Button>
                 </Grid>
+            </Grid>
+
+            <!-- ================= VIEW 3: IN-APP GUIDE OVERLAY (Ảnh chỉ dẫn trực quan) ================= -->
+            <Grid x:Name="GuideOverlayGrid" Visibility="Collapsed" Background="#80000000">
+                <Border Background="White" CornerRadius="16" Margin="40,24,40,24" BorderBrush="#e5e7eb" BorderThickness="1" Effect="{StaticResource MenuShadow}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="44"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Guide Header -->
+                        <Border Grid.Row="0" Background="#f8fafc" BorderBrush="#e5e7eb" BorderThickness="0,0,0,1" CornerRadius="15,15,0,0">
+                            <Grid Margin="16,0,12,0">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock Text="📖" FontSize="14" Margin="0,0,8,0"/>
+                                    <TextBlock Text="Hướng Dẫn Sử Dụng MomoiMacro" FontWeight="Bold" FontSize="14" Foreground="#1f2937" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <Button Click="BtnCloseGuide_Click" Width="32" Height="28" HorizontalAlignment="Right" Background="Transparent" BorderThickness="0" Cursor="Hand">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}" CornerRadius="6">
+                                                <TextBlock Text="✕" FontSize="13" Foreground="#6b7280" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>
+                            </Grid>
+                        </Border>
+
+                        <!-- Guide Image ScrollViewer -->
+                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                            <StackPanel Margin="16">
+                                <Border CornerRadius="12" ClipToBounds="True" BorderBrush="#fce7f3" BorderThickness="1" Margin="0,0,0,14">
+                                    <Image Source="Assets/BAMacro_Guide.jpg" Stretch="Uniform" HorizontalAlignment="Center"/>
+                                </Border>
+                                <Button Click="BtnCloseGuide_Click" Content="Đã hiểu, quay lại màn hình chính" Height="40" Background="#cf6a87" Foreground="White" FontWeight="Bold" FontSize="13" Cursor="Hand" BorderThickness="0">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}" CornerRadius="10">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Grid>
+                </Border>
             </Grid>
 
         </Grid>
