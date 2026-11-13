@@ -42,7 +42,7 @@
   <ItemGroup>
     <Resource Include="Assets\app.ico" />
     <Resource Include="Assets\student.png" />
-    <Resource Include="Assets\BAMacro_Guide.jpg" />
+    <Resource Include="Assets\guide_bg.jpg" />
     <EmbeddedResource Include="Assets\secret_meme.bin" />
     <None Remove="Assets\student.jpg" />
   </ItemGroup>

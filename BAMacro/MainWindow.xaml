@@ -75,44 +75,15 @@
                             <TextBlock Text="MomoiMacro" FontWeight="SemiBold" FontSize="14" Foreground="#374151" VerticalAlignment="Center"/>
                         </StackPanel>
 
-                        <!-- Window & Action Controls -->
+                        <!-- Window & Menu Controls -->
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
 
-                            <!-- Hướng dẫn sử dụng Button -->
-                            <Button Click="BtnGuide_Click" Height="26" Padding="8,0" Background="#f3f4f6" BorderThickness="0" Cursor="Hand" Margin="0,0,6,0" ToolTip="Xem ảnh hướng dẫn sử dụng">
-                                <Button.Template>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
-                                            <StackPanel Orientation="Horizontal">
-                                                <TextBlock Text="📖" FontSize="11" Margin="0,0,4,0"/>
-                                                <TextBlock Text="Hướng dẫn" FontSize="11.5" FontWeight="SemiBold" Foreground="#4b5563" VerticalAlignment="Center"/>
-                                            </StackPanel>
-                                        </Border>
-                                    </ControlTemplate>
-                                </Button.Template>
-                            </Button>
-
-                            <!-- GitHub Repository Link Button -->
-                            <Button Click="BtnGitHub_Click" Height="26" Padding="8,0" Background="#f3f4f6" BorderThickness="0" Cursor="Hand" Margin="0,0,8,0" ToolTip="Mở GitHub Repository (https://github.com/MthanhGFD/MomoiMacro)">
-                                <Button.Template>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
-                                            <StackPanel Orientation="Horizontal">
-                                                <TextBlock Text="🐙" FontSize="11" Margin="0,0,4,0"/>
-                                                <TextBlock Text="GitHub" FontSize="11.5" FontWeight="SemiBold" Foreground="#4b5563" VerticalAlignment="Center"/>
-                                            </StackPanel>
-                                        </Border>
-                                    </ControlTemplate>
-                                </Button.Template>
-                            </Button>
-
-                            <!-- Menu Cài Đặt (Scale & Settings Popup) -->
-                            <Button Name="BtnSettingsMenu" Click="BtnSettingsMenu_Click" Height="26" Padding="8,0" Background="#ffffff" BorderBrush="#e5e7eb" BorderThickness="1" Cursor="Hand" Margin="0,0,8,0" ToolTip="Cài đặt kích thước giao diện">
+                            <!-- Single Menu Button (contains Guide, GitHub, Mini Mode, Scale) -->
+                            <Button Name="BtnSettingsMenu" Click="BtnSettingsMenu_Click" Height="26" Padding="10,0" Background="#ffffff" BorderBrush="#e5e7eb" BorderThickness="1" Cursor="Hand" Margin="0,0,8,0">
                                 <Button.Template>
                                     <ControlTemplate TargetType="Button">
                                         <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="6" Padding="{TemplateBinding Padding}">
                                             <StackPanel Orientation="Horizontal">
-                                                <TextBlock Text="⚙" FontSize="11.5" Foreground="#6b7280" Margin="0,0,4,0"/>
                                                 <TextBlock Text="Menu" FontSize="11.5" FontWeight="SemiBold" Foreground="#4b5563" VerticalAlignment="Center"/>
                                                 <TextBlock Text=" ▾" FontSize="9" Foreground="#9ca3af" VerticalAlignment="Center"/>
                                             </StackPanel>
@@ -121,19 +92,68 @@
                                 </Button.Template>
                             </Button>
 
-                            <!-- Settings Context Menu Popup (Đẹp, gọn gàng, thay thế ComboBox) -->
+                            <!-- Unified Menu Popup -->
                             <Popup Name="PopupSettingsMenu" PlacementTarget="{Binding ElementName=BtnSettingsMenu}" Placement="Bottom" StaysOpen="False" AllowsTransparency="True" PopupAnimation="Fade">
-                                <Border Background="White" CornerRadius="10" BorderBrush="#e5e7eb" BorderThickness="1" Padding="6" Margin="0,4,0,0" Effect="{StaticResource MenuShadow}" Width="160">
+                                <Border Background="White" CornerRadius="10" BorderBrush="#e5e7eb" BorderThickness="1" Padding="6" Margin="0,4,0,0" Effect="{StaticResource MenuShadow}" Width="180">
                                     <StackPanel>
-                                        <TextBlock Text="ĐỘ PHÓNG ĐẠI (SCALE)" FontSize="9.5" FontWeight="Bold" Foreground="#9ca3af" Margin="8,4,8,6"/>
+                                        <!-- Hướng dẫn -->
+                                        <Button Click="BtnGuide_Click" Background="Transparent" BorderThickness="0" Cursor="Hand" Padding="10,7" HorizontalContentAlignment="Left">
+                                            <Button.Template>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Border Name="MenuRow" Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                                                        <TextBlock Text="Hướng dẫn sử dụng" FontSize="12" FontWeight="Medium" Foreground="#374151" VerticalAlignment="Center"/>
+                                                    </Border>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter TargetName="MenuRow" Property="Background" Value="#fce7f3"/>
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Button.Template>
+                                        </Button>
+
+                                        <!-- Mini Mode -->
+                                        <Button Click="BtnMiniMode_Click" Background="Transparent" BorderThickness="0" Cursor="Hand" Padding="10,7" HorizontalContentAlignment="Left">
+                                            <Button.Template>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Border Name="MenuRow" Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                                                        <TextBlock Text="Chế độ Mini Mode" FontSize="12" FontWeight="Medium" Foreground="#374151" VerticalAlignment="Center"/>
+                                                    </Border>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter TargetName="MenuRow" Property="Background" Value="#fce7f3"/>
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Button.Template>
+                                        </Button>
+
+                                        <!-- GitHub -->
+                                        <Button Click="BtnGitHub_Click" Background="Transparent" BorderThickness="0" Cursor="Hand" Padding="10,7" HorizontalContentAlignment="Left">
+                                            <Button.Template>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Border Name="MenuRow" Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                                                        <TextBlock Text="GitHub Repository" FontSize="12" FontWeight="Medium" Foreground="#374151" VerticalAlignment="Center"/>
+                                                    </Border>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter TargetName="MenuRow" Property="Background" Value="#fce7f3"/>
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Button.Template>
+                                        </Button>
+
+                                        <Border Height="1" Background="#f3f4f6" Margin="6,5"/>
+                                        <TextBlock Text="SCALE" FontSize="9.5" FontWeight="Bold" Foreground="#9ca3af" Margin="10,2,10,4"/>
                                         
                                         <!-- 100% -->
-                                        <Button Click="ScaleOption_Click" Tag="100%" Background="Transparent" BorderThickness="0" Cursor="Hand" Padding="8,6" HorizontalContentAlignment="Left">
+                                        <Button Click="ScaleOption_Click" Tag="100%" Background="Transparent" BorderThickness="0" Cursor="Hand" Padding="10,6" HorizontalContentAlignment="Left">
                                             <Button.Template>
                                                 <ControlTemplate TargetType="Button">
                                                     <Border Name="ItemBorder" Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
                                                         <Grid>
-                                                            <TextBlock Text="Chuẩn (100%)" FontSize="12" Foreground="#374151" VerticalAlignment="Center"/>
+                                                            <TextBlock Text="100% (Mặc định)" FontSize="12" Foreground="#374151" VerticalAlignment="Center"/>
                                                             <TextBlock Name="Check100" Text="✔" Foreground="#cf6a87" FontWeight="Bold" HorizontalAlignment="Right" VerticalAlignment="Center"/>
                                                         </Grid>
                                                     </Border>
@@ -147,12 +167,12 @@
                                         </Button>
 
                                         <!-- 85% -->
-                                        <Button Click="ScaleOption_Click" Tag="85%" Background="Transparent" BorderThickness="0" Cursor="Hand" Padding="8,6" HorizontalContentAlignment="Left">
+                                        <Button Click="ScaleOption_Click" Tag="85%" Background="Transparent" BorderThickness="0" Cursor="Hand" Padding="10,6" HorizontalContentAlignment="Left">
                                             <Button.Template>
                                                 <ControlTemplate TargetType="Button">
                                                     <Border Name="ItemBorder" Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
                                                         <Grid>
-                                                            <TextBlock Text="Vừa phải (85%)" FontSize="12" Foreground="#374151" VerticalAlignment="Center"/>
+                                                            <TextBlock Text="85% (Vừa phải)" FontSize="12" Foreground="#374151" VerticalAlignment="Center"/>
                                                             <TextBlock Name="Check85" Text="✔" Visibility="Collapsed" Foreground="#cf6a87" FontWeight="Bold" HorizontalAlignment="Right" VerticalAlignment="Center"/>
                                                         </Grid>
                                                     </Border>
@@ -166,12 +186,12 @@
                                         </Button>
 
                                         <!-- 70% -->
-                                        <Button Click="ScaleOption_Click" Tag="70%" Background="Transparent" BorderThickness="0" Cursor="Hand" Padding="8,6" HorizontalContentAlignment="Left">
+                                        <Button Click="ScaleOption_Click" Tag="70%" Background="Transparent" BorderThickness="0" Cursor="Hand" Padding="10,6" HorizontalContentAlignment="Left">
                                             <Button.Template>
                                                 <ControlTemplate TargetType="Button">
                                                     <Border Name="ItemBorder" Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
                                                         <Grid>
-                                                            <TextBlock Text="Nhỏ gọn (70%)" FontSize="12" Foreground="#374151" VerticalAlignment="Center"/>
+                                                            <TextBlock Text="70% (Nhỏ gọn)" FontSize="12" Foreground="#374151" VerticalAlignment="Center"/>
                                                             <TextBlock Name="Check70" Text="✔" Visibility="Collapsed" Foreground="#cf6a87" FontWeight="Bold" HorizontalAlignment="Right" VerticalAlignment="Center"/>
                                                         </Grid>
                                                     </Border>
@@ -186,20 +206,6 @@
                                     </StackPanel>
                                 </Border>
                             </Popup>
-
-                            <!-- Switch to Mini Mode Button -->
-                            <Button Click="BtnMiniMode_Click" Height="26" Padding="8,0" Background="#fce7f3" BorderThickness="0" Cursor="Hand" Margin="0,0,10,0" ToolTip="Chuyển sang giao diện Mini tối giản">
-                                <Button.Template>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
-                                            <StackPanel Orientation="Horizontal">
-                                                <TextBlock Text="🗗" FontSize="11" Foreground="#cf6a87" Margin="0,0,4,0"/>
-                                                <TextBlock Text="Mini Mode" FontSize="11" FontWeight="Bold" Foreground="#cf6a87" VerticalAlignment="Center"/>
-                                            </StackPanel>
-                                        </Border>
-                                    </ControlTemplate>
-                                </Button.Template>
-                            </Button>
 
                             <!-- Minimize & Close Buttons -->
                             <Button Click="BtnMinimize_Click" Width="36" Height="28" Background="Transparent" BorderThickness="0" Cursor="Hand" Margin="0,0,4,0" ToolTip="Thu nhỏ">
@@ -577,27 +583,24 @@
                 </Grid>
             </Grid>
 
-            <!-- ================= VIEW 3: IN-APP GUIDE OVERLAY (Ảnh chỉ dẫn trực quan) ================= -->
-            <Grid x:Name="GuideOverlayGrid" Visibility="Collapsed" Background="#80000000">
-                <Border Background="White" CornerRadius="16" Margin="40,24,40,24" BorderBrush="#e5e7eb" BorderThickness="1" Effect="{StaticResource MenuShadow}">
+            <!-- ================= VIEW 3: IN-APP GUIDE OVERLAY (Ảnh giao diện làm tối nhẹ + line chỉ dẫn) ================= -->
+            <Grid x:Name="GuideOverlayGrid" Visibility="Collapsed" Background="#B00F172A">
+                <Border Background="#111827" CornerRadius="16" Margin="20,16,20,16" BorderBrush="#374151" BorderThickness="1" Effect="{StaticResource MenuShadow}" ClipToBounds="True">
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="44"/>
+                            <RowDefinition Height="42"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
 
                         <!-- Guide Header -->
-                        <Border Grid.Row="0" Background="#f8fafc" BorderBrush="#e5e7eb" BorderThickness="0,0,0,1" CornerRadius="15,15,0,0">
+                        <Border Grid.Row="0" Background="#1f2937" BorderBrush="#374151" BorderThickness="0,0,0,1" CornerRadius="15,15,0,0">
                             <Grid Margin="16,0,12,0">
-                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <TextBlock Text="📖" FontSize="14" Margin="0,0,8,0"/>
-                                    <TextBlock Text="Hướng Dẫn Sử Dụng MomoiMacro" FontWeight="Bold" FontSize="14" Foreground="#1f2937" VerticalAlignment="Center"/>
-                                </StackPanel>
-                                <Button Click="BtnCloseGuide_Click" Width="32" Height="28" HorizontalAlignment="Right" Background="Transparent" BorderThickness="0" Cursor="Hand">
+                                <TextBlock Text="Hướng Dẫn Sử Dụng MomoiMacro" FontWeight="Bold" FontSize="13.5" Foreground="#f9fafb" VerticalAlignment="Center"/>
+                                <Button Click="BtnCloseGuide_Click" Height="26" Padding="12,0" HorizontalAlignment="Right" Background="#cf6a87" BorderThickness="0" Cursor="Hand">
                                     <Button.Template>
                                         <ControlTemplate TargetType="Button">
-                                            <Border Background="{TemplateBinding Background}" CornerRadius="6">
-                                                <TextBlock Text="✕" FontSize="13" Foreground="#6b7280" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            <Border Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                                                <TextBlock Text="Đóng" FontSize="12" FontWeight="Bold" Foreground="White" VerticalAlignment="Center"/>
                                             </Border>
                                         </ControlTemplate>
                                     </Button.Template>
@@ -605,23 +608,87 @@
                             </Grid>
                         </Border>
 
-                        <!-- Guide Image ScrollViewer -->
-                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                            <StackPanel Margin="16">
-                                <Border CornerRadius="12" ClipToBounds="True" BorderBrush="#fce7f3" BorderThickness="1" Margin="0,0,0,14">
-                                    <Image Source="Assets/BAMacro_Guide.jpg" Stretch="Uniform" HorizontalAlignment="Center"/>
-                                </Border>
-                                <Button Click="BtnCloseGuide_Click" Content="Đã hiểu, quay lại màn hình chính" Height="40" Background="#cf6a87" Foreground="White" FontWeight="Bold" FontSize="13" Cursor="Hand" BorderThickness="0">
-                                    <Button.Template>
-                                        <ControlTemplate TargetType="Button">
-                                            <Border Background="{TemplateBinding Background}" CornerRadius="10">
-                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                            </Border>
-                                        </ControlTemplate>
-                                    </Button.Template>
-                                </Button>
-                            </StackPanel>
-                        </ScrollViewer>
+                        <!-- Annotated Screenshot Canvas (1024 x 723) -->
+                        <Viewbox Grid.Row="1" Stretch="Uniform" Margin="8">
+                            <Grid Width="1024" Height="723">
+                                <!-- Original Screenshot -->
+                                <Image Source="Assets/guide_bg.jpg" Width="1024" Height="723" Stretch="Fill"/>
+                                <!-- Làm tối nhẹ ảnh nền -->
+                                <Rectangle Fill="#7A0F172A" Width="1024" Height="723"/>
+
+                                <!-- Callout Lines, Dots & Explanations -->
+                                <Canvas Width="1024" Height="723">
+
+                                    <!-- 1. Target Process -->
+                                    <Polyline Points="165,166 165,86" Stroke="#f9a8d4" StrokeThickness="2.5"/>
+                                    <Ellipse Canvas.Left="159" Canvas.Top="160" Width="12" Height="12" Fill="#cf6a87" Stroke="White" StrokeThickness="2"/>
+                                    <Border Canvas.Left="28" Canvas.Top="16" Width="300" Background="#EE1E293B" BorderBrush="#f472b6" BorderThickness="1.5" CornerRadius="10" Padding="12,8">
+                                        <StackPanel>
+                                            <TextBlock Text="1. Target Process" FontWeight="Bold" FontSize="13" Foreground="#f9a8d4"/>
+                                            <TextBlock Text="Tên file .exe của game hoặc giả lập (mặc định BlueArchive.exe). Macro chỉ chạy khi cửa sổ này đang mở." FontSize="11.5" Foreground="#f3f4f6" TextWrapping="Wrap" Margin="0,3,0,0"/>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <!-- 2. Delay (ms) -->
+                                    <Polyline Points="513,166 513,86" Stroke="#f9a8d4" StrokeThickness="2.5"/>
+                                    <Ellipse Canvas.Left="507" Canvas.Top="160" Width="12" Height="12" Fill="#cf6a87" Stroke="White" StrokeThickness="2"/>
+                                    <Border Canvas.Left="370" Canvas.Top="16" Width="290" Background="#EE1E293B" BorderBrush="#f472b6" BorderThickness="1.5" CornerRadius="10" Padding="12,8">
+                                        <StackPanel>
+                                            <TextBlock Text="2. Delay (ms)" FontWeight="Bold" FontSize="13" Foreground="#f9a8d4"/>
+                                            <TextBlock Text="Độ trễ giữa lúc bấm Skill 1/2/3 và Click chuột cho cụm phím Q / W / E. Bấm Ctrl+1 tắt bật lại để áp dụng." FontSize="11.5" Foreground="#f3f4f6" TextWrapping="Wrap" Margin="0,3,0,0"/>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <!-- 3. Start / Stop (Ctrl + 1) -->
+                                    <Polyline Points="185,264 185,342" Stroke="#f9a8d4" StrokeThickness="2.5"/>
+                                    <Ellipse Canvas.Left="179" Canvas.Top="258" Width="12" Height="12" Fill="#cf6a87" Stroke="White" StrokeThickness="2"/>
+                                    <Border Canvas.Left="32" Canvas.Top="342" Width="256" Background="#EE1E293B" BorderBrush="#f472b6" BorderThickness="1.5" CornerRadius="10" Padding="12,8">
+                                        <StackPanel>
+                                            <TextBlock Text="3. Bật / Tắt Macro (Ctrl + 1)" FontWeight="Bold" FontSize="13" Foreground="#f9a8d4"/>
+                                            <TextBlock Text="Nhấn nút hoặc phím tắt Ctrl + 1 ở mọi nơi để bật/tắt macro." FontSize="11.5" Foreground="#f3f4f6" TextWrapping="Wrap" Margin="0,3,0,0"/>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <!-- 4. Record Mode (Ctrl + 2) -->
+                                    <Polyline Points="475,264 475,342" Stroke="#f9a8d4" StrokeThickness="2.5"/>
+                                    <Ellipse Canvas.Left="469" Canvas.Top="258" Width="12" Height="12" Fill="#cf6a87" Stroke="White" StrokeThickness="2"/>
+                                    <Border Canvas.Left="304" Canvas.Top="342" Width="268" Background="#EE1E293B" BorderBrush="#f472b6" BorderThickness="1.5" CornerRadius="10" Padding="12,8">
+                                        <StackPanel>
+                                            <TextBlock Text="4. Gán vị trí phím (Ctrl + 2)" FontWeight="Bold" FontSize="13" Foreground="#f9a8d4"/>
+                                            <TextBlock Text="Bật Record → rê chuột tới vị trí trong game → bấm phím muốn gán (A-Z, Mouse4/5, RMB)." FontSize="11.5" Foreground="#f3f4f6" TextWrapping="Wrap" Margin="0,3,0,0"/>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <!-- 5. Saved Keys 16:9 Preview -->
+                                    <Polyline Points="305,498 305,546" Stroke="#f9a8d4" StrokeThickness="2.5"/>
+                                    <Ellipse Canvas.Left="299" Canvas.Top="492" Width="12" Height="12" Fill="#cf6a87" Stroke="White" StrokeThickness="2"/>
+                                    <Border Canvas.Left="76" Canvas.Top="546" Width="460" Background="#EE1E293B" BorderBrush="#f472b6" BorderThickness="1.5" CornerRadius="10" Padding="12,8">
+                                        <StackPanel>
+                                            <TextBlock Text="5. Bản đồ phím 16:9 &amp; Open INI" FontWeight="Bold" FontSize="13" Foreground="#f9a8d4"/>
+                                            <TextBlock Text="Hiện chấm vị trí từng phím theo tỷ lệ % màn hình game. Trong trận, chỉ cần ấn phím đã lưu là tự động click đúng vị trí đó (Open INI để sửa/xóa)." FontSize="11.5" Foreground="#f3f4f6" TextWrapping="Wrap" Margin="0,3,0,0"/>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <!-- 6. Skill Hotkeys (Q/W/E) -->
+                                    <Polyline Points="725,568 725,492" Stroke="#f9a8d4" StrokeThickness="2.5"/>
+                                    <Ellipse Canvas.Left="719" Canvas.Top="562" Width="12" Height="12" Fill="#cf6a87" Stroke="White" StrokeThickness="2"/>
+                                    <Border Canvas.Left="604" Canvas.Top="400" Width="384" Background="#EE1E293B" BorderBrush="#f472b6" BorderThickness="1.5" CornerRadius="10" Padding="12,8">
+                                        <StackPanel>
+                                            <TextBlock Text="6. Ra chiêu nhanh (Q / W / E)" FontWeight="Bold" FontSize="13" Foreground="#f9a8d4"/>
+                                            <TextBlock Text="Rê chuột vào mục tiêu rồi bấm Q / W / E: tự chọn thẻ Skill 1/2/3 → chờ Delay → Click ngay tại vị trí con trỏ chuột." FontSize="11.5" Foreground="#f3f4f6" TextWrapping="Wrap" Margin="0,3,0,0"/>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <!-- 7. Game Status Bar -->
+                                    <Polyline Points="110,705 215,672" Stroke="#f9a8d4" StrokeThickness="2.5"/>
+                                    <Ellipse Canvas.Left="104" Canvas.Top="699" Width="12" Height="12" Fill="#cf6a87" Stroke="White" StrokeThickness="2"/>
+                                    <Border Canvas.Left="215" Canvas.Top="646" Width="375" Background="#EE1E293B" BorderBrush="#f472b6" BorderThickness="1.5" CornerRadius="10" Padding="12,6">
+                                        <TextBlock Text="7. Trạng thái game: Tạm ngưng khi minimize hoặc ở nền." FontSize="11.5" FontWeight="SemiBold" Foreground="#f3f4f6" TextWrapping="Wrap"/>
+                                    </Border>
+
+                                </Canvas>
+                            </Grid>
+                        </Viewbox>
                     </Grid>
                 </Border>
             </Grid>

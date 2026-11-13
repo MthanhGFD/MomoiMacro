@@ -200,9 +200,15 @@ namespace BAMacro
 
         #region Scale, Menu & External Links
 
+        private string _currentScalePreset = "100%";
+
         private void BtnSettingsMenu_Click(object sender, RoutedEventArgs e)
         {
             PopupSettingsMenu.IsOpen = !PopupSettingsMenu.IsOpen;
+            if (PopupSettingsMenu.IsOpen)
+            {
+                Dispatcher.BeginInvoke(DispatcherPriority.Loaded, () => UpdateScaleCheckmarks(_currentScalePreset));
+            }
         }
 
         private void ScaleOption_Click(object sender, RoutedEventArgs e)
@@ -216,6 +222,7 @@ namespace BAMacro
 
         private void ApplyScale(string preset)
         {
+            _currentScalePreset = preset;
             if (AppScaleTransform == null || _isMiniMode) return;
 
             double scale = preset switch
@@ -261,6 +268,7 @@ namespace BAMacro
 
         private void BtnGuide_Click(object sender, RoutedEventArgs e)
         {
+            PopupSettingsMenu.IsOpen = false;
             GuideOverlayGrid.Visibility = Visibility.Visible;
         }
 
@@ -271,6 +279,7 @@ namespace BAMacro
 
         private void BtnGitHub_Click(object sender, RoutedEventArgs e)
         {
+            PopupSettingsMenu.IsOpen = false;
             try
             {
                 Process.Start(new ProcessStartInfo
@@ -287,6 +296,7 @@ namespace BAMacro
 
         private void BtnMiniMode_Click(object sender, RoutedEventArgs e)
         {
+            PopupSettingsMenu.IsOpen = false;
             SwitchToMiniMode();
         }
 
