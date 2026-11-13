@@ -6,9 +6,11 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
+using Forms = System.Windows.Forms;
 
 namespace BAMacro
 {
@@ -25,6 +27,16 @@ namespace BAMacro
         private bool? _isRunning;
         private bool? _isCapture;
         private string _keysSignature = "";
+
+        // Tray icon & window states
+        private Forms.NotifyIcon? _notifyIcon;
+        private bool _isExiting = false;
+        private bool _isMiniMode = false;
+
+        private const double BaseFullWidth = 1020;
+        private const double BaseFullHeight = 770;
+        private const double MiniWidth = 280;
+        private const double MiniHeight = 160;
 
         #region Win32
 
@@ -53,6 +65,7 @@ namespace BAMacro
         public MainWindow()
         {
             InitializeComponent();
+            InitNotifyIcon();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -79,9 +92,195 @@ namespace BAMacro
 
         private void BtnMinimize_Click(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
 
-        private void BtnClose_Click(object sender, RoutedEventArgs e) => Close();
+        // "Tắt" cửa sổ -> Thu vào Tray Icon thay vì thoát hoàn toàn
+        private void BtnClose_Click(object sender, RoutedEventArgs e)
+        {
+            HideToTray();
+        }
 
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) => StopAhkEngine();
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (!_isExiting)
+            {
+                e.Cancel = true;
+                HideToTray();
+                return;
+            }
+
+            // Thực sự thoát
+            if (_notifyIcon != null)
+            {
+                _notifyIcon.Visible = false;
+                _notifyIcon.Dispose();
+                _notifyIcon = null;
+            }
+            StopAhkEngine();
+        }
+
+        #region System Tray Integration
+
+        private void InitNotifyIcon()
+        {
+            try
+            {
+                _notifyIcon = new Forms.NotifyIcon
+                {
+                    Text = "MomoiMacro (Đang chạy ngầm)",
+                    Visible = true
+                };
+
+                // Lấy icon từ app hoặc resource
+                string iconPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "app.ico");
+                if (File.Exists(iconPath))
+                {
+                    _notifyIcon.Icon = new System.Drawing.Icon(iconPath);
+                }
+                else
+                {
+                    _notifyIcon.Icon = System.Drawing.SystemIcons.Application;
+                }
+
+                // Menu chuột phải trên Tray Icon
+                var contextMenu = new Forms.ContextMenuStrip();
+
+                var itemShow = new Forms.ToolStripMenuItem("Hiện cửa sổ", null, (_, _) => RestoreFromTray());
+                var itemMini = new Forms.ToolStripMenuItem("Chế độ Mini", null, (_, _) => SwitchToMiniMode());
+                var itemToggle = new Forms.ToolStripMenuItem("Bật / Tắt Macro (Ctrl+1)", null, (_, _) => SendCtrlCombo(VK_1));
+                var itemExit = new Forms.ToolStripMenuItem("Thoát hoàn toàn", null, (_, _) => ExitApplication());
+
+                contextMenu.Items.Add(itemShow);
+                contextMenu.Items.Add(itemMini);
+                contextMenu.Items.Add(itemToggle);
+                contextMenu.Items.Add(new Forms.ToolStripSeparator());
+                contextMenu.Items.Add(itemExit);
+
+                _notifyIcon.ContextMenuStrip = contextMenu;
+                _notifyIcon.DoubleClick += (_, _) => RestoreFromTray();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Failed to init notify icon: {ex.Message}");
+            }
+        }
+
+        private void HideToTray()
+        {
+            Hide();
+            if (_notifyIcon != null)
+            {
+                _notifyIcon.ShowBalloonTip(1500, "MomoiMacro", "Momoi vẫn đang chạy ngầm trong khay hệ thống (Tray) nè Sensei!", Forms.ToolTipIcon.Info);
+            }
+        }
+
+        private void RestoreFromTray()
+        {
+            Show();
+            WindowState = WindowState.Normal;
+            Activate();
+        }
+
+        private void ExitApplication()
+        {
+            _isExiting = true;
+            Close();
+        }
+
+        #endregion
+
+        #region Scale & Mode Switching
+
+        private void ComboScale_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (AppScaleTransform == null || _isMiniMode) return;
+
+            if (ComboScale.SelectedItem is ComboBoxItem item && item.Content is string s)
+            {
+                double scale = s switch
+                {
+                    "85%" => 0.85,
+                    "70%" => 0.70,
+                    _ => 1.0
+                };
+
+                AppScaleTransform.ScaleX = scale;
+                AppScaleTransform.ScaleY = scale;
+
+                Width = BaseFullWidth * scale;
+                Height = BaseFullHeight * scale;
+
+                SaveScaleSetting(s);
+            }
+        }
+
+        private void BtnMiniMode_Click(object sender, RoutedEventArgs e)
+        {
+            SwitchToMiniMode();
+        }
+
+        private void BtnFullMode_Click(object sender, RoutedEventArgs e)
+        {
+            SwitchToFullMode();
+        }
+
+        private void SwitchToMiniMode()
+        {
+            _isMiniMode = true;
+            FullViewGrid.Visibility = Visibility.Collapsed;
+            MiniViewGrid.Visibility = Visibility.Visible;
+
+            AppScaleTransform.ScaleX = 1.0;
+            AppScaleTransform.ScaleY = 1.0;
+
+            Width = MiniWidth;
+            Height = MiniHeight;
+
+            Topmost = true; // Chế độ mini luôn nổi trên màn hình game để tiện quan sát
+            RestoreFromTray();
+        }
+
+        private void SwitchToFullMode()
+        {
+            _isMiniMode = false;
+            MiniViewGrid.Visibility = Visibility.Collapsed;
+            FullViewGrid.Visibility = Visibility.Visible;
+
+            Topmost = false;
+
+            // Áp dụng lại scale hiện tại từ ComboBox
+            if (ComboScale.SelectedItem is ComboBoxItem item && item.Content is string s)
+            {
+                double scale = s switch
+                {
+                    "85%" => 0.85,
+                    "70%" => 0.70,
+                    _ => 1.0
+                };
+
+                AppScaleTransform.ScaleX = scale;
+                AppScaleTransform.ScaleY = scale;
+
+                Width = BaseFullWidth * scale;
+                Height = BaseFullHeight * scale;
+            }
+            else
+            {
+                Width = BaseFullWidth;
+                Height = BaseFullHeight;
+            }
+
+            RestoreFromTray();
+        }
+
+        private void SaveScaleSetting(string scale)
+        {
+            try
+            {
+                WritePrivateProfileString("Settings", "ScalePreset", scale, _iniPath);
+            }
+            catch { /* ignore */ }
+        }
+
+        #endregion
 
         #region AutoHotkey Engine
 
@@ -210,7 +409,6 @@ namespace BAMacro
                 WritePrivateProfileString("Settings", "DelayMs", delay.ToString(), _iniPath);
             else
                 TxtDelayMs.Text = "20";
-            // AHK đọc lại Settings mỗi lần bật macro (Ctrl + 1)
         }
 
         #endregion
@@ -290,6 +488,7 @@ namespace BAMacro
                 ListKeys.ItemsSource = BuildMarkers(points);
                 TxtKeysHeader.Text = $"SAVED KEYS ({points.Count})";
                 TxtNoKeys.Visibility = points.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+                MiniTxtKeys.Text = $"{points.Count} keys";
             }
         }
 
@@ -360,17 +559,29 @@ namespace BAMacro
                 _isRunning = running;
                 if (running)
                 {
+                    // Full view
                     BorderBtn.Background = Brush("#e11d48");
                     BorderPill.Background = Brush("#9f1239");
                     TxtBtnIcon.Text = "⏹";
                     TxtBtnText.Text = "Stop";
+
+                    // Mini view
+                    MiniBorderBtn.Background = Brush("#e11d48");
+                    MiniTxtBtnIcon.Text = "⏹";
+                    MiniTxtBtnText.Text = "Stop Macro";
                 }
                 else
                 {
+                    // Full view
                     BorderBtn.Background = Brush("#cf6a87");
                     BorderPill.Background = Brush("#b95572");
                     TxtBtnIcon.Text = "▶";
                     TxtBtnText.Text = "Start";
+
+                    // Mini view
+                    MiniBorderBtn.Background = Brush("#cf6a87");
+                    MiniTxtBtnIcon.Text = "▶";
+                    MiniTxtBtnText.Text = "Start Macro";
                 }
             }
 
@@ -379,6 +590,7 @@ namespace BAMacro
                 _isCapture = capture;
                 if (capture)
                 {
+                    // Full view
                     BorderRecord.Background = Brush("#fdf2f4");
                     BorderRecord.BorderBrush = Brush("#cf6a87");
                     DotRecord.Fill = Brush("#e11d48");
@@ -386,26 +598,50 @@ namespace BAMacro
                     TxtRecord.Foreground = Brush("#cf6a87");
                     PillRecord.Background = Brush("#fce7f3");
                     TxtRecordPill.Foreground = Brush("#cf6a87");
+
+                    // Mini view
+                    MiniBorderRecord.Background = Brush("#fdf2f4");
+                    MiniBorderRecord.BorderBrush = Brush("#cf6a87");
+                    MiniDotRecord.Fill = Brush("#e11d48");
+                    MiniTxtRecord.Text = "Recording...";
+                    MiniTxtRecord.Foreground = Brush("#cf6a87");
                 }
                 else
                 {
-                    BorderRecord.Background = Brushes.White;
+                    // Full view
+                    BorderRecord.Background = System.Windows.Media.Brushes.White;
                     BorderRecord.BorderBrush = Brush("#d1d5db");
                     DotRecord.Fill = Brush("#4b5563");
                     TxtRecord.Text = "Record";
                     TxtRecord.Foreground = Brush("#4b5563");
                     PillRecord.Background = Brush("#e5e7eb");
                     TxtRecordPill.Foreground = Brush("#6b7280");
+
+                    // Mini view
+                    MiniBorderRecord.Background = System.Windows.Media.Brushes.White;
+                    MiniBorderRecord.BorderBrush = Brush("#d1d5db");
+                    MiniDotRecord.Fill = Brush("#4b5563");
+                    MiniTxtRecord.Text = "Record";
+                    MiniTxtRecord.Foreground = Brush("#4b5563");
                 }
             }
 
             // Header badge: RECORDING > RUNNING > READY
             if (capture)
+            {
                 SetBadge("#fef3c7", "#fcd34d", "#f59e0b", "RECORDING", "#92400e");
+                SetMiniBadge("#f59e0b", "RECORDING", "#92400e");
+            }
             else if (running)
+            {
                 SetBadge("#fce7f3", "#f472b6", "#e11d48", "RUNNING", "#9f1239");
+                SetMiniBadge("#e11d48", "RUNNING", "#9f1239");
+            }
             else
+            {
                 SetBadge("#d1fae5", "#a7f3d0", "#10b981", "READY", "#047857");
+                SetMiniBadge("#10b981", "READY", "#047857");
+            }
         }
 
         private void SetBadge(string bg, string border, string dot, string text, string fg)
@@ -418,6 +654,13 @@ namespace BAMacro
             TxtStatus.Foreground = Brush(fg);
         }
 
+        private void SetMiniBadge(string dot, string text, string fg)
+        {
+            MiniDotStatus.Fill = Brush(dot);
+            MiniTxtStatus.Text = text;
+            MiniTxtStatus.Foreground = Brush(fg);
+        }
+
         private static string PrettyKey(string key) => key.ToLowerInvariant() switch
         {
             "xbutton1" => "Mouse4",
@@ -426,7 +669,7 @@ namespace BAMacro
             var k => k.ToUpperInvariant()
         };
 
-        private static SolidColorBrush Brush(string hex) => new((Color)ColorConverter.ConvertFromString(hex));
+        private static SolidColorBrush Brush(string hex) => new((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(hex));
 
         private void LoadSettingsToUi()
         {
@@ -437,6 +680,19 @@ namespace BAMacro
                 {
                     if (s.TryGetValue("targetexe", out var exe) && exe.Length > 0) TxtTargetExe.Text = exe;
                     if (s.TryGetValue("delayms", out var d) && d.Length > 0) TxtDelayMs.Text = d;
+
+                    // Load scale preset
+                    if (s.TryGetValue("scalepreset", out var preset) && preset.Length > 0)
+                    {
+                        foreach (ComboBoxItem item in ComboScale.Items)
+                        {
+                            if (item.Content as string == preset)
+                            {
+                                ComboScale.SelectedItem = item;
+                                break;
+                            }
+                        }
+                    }
                 }
             }
             catch
@@ -453,6 +709,7 @@ namespace BAMacro
 @"[Settings]
 TargetExe=BlueArchive.exe
 DelayMs=20
+ScalePreset=100%
 
 [Keys]
 
