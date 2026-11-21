@@ -178,7 +178,7 @@ namespace BAMacro
             Hide();
             if (_notifyIcon != null)
             {
-                _notifyIcon.ShowBalloonTip(1500, "MomoiMacro", "Momoi vẫn đang chạy ngầm trong khay hệ thống nè Sensei! (Click vào icon để mở lại)", Forms.ToolTipIcon.Info);
+                _notifyIcon.ShowBalloonTip(1500, "MomoiMacro", "Momoi vẫn đang chạy ngầm trong icon tray nhá :3", Forms.ToolTipIcon.Info);
             }
         }
 
